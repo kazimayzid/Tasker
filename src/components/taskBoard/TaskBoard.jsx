@@ -17,10 +17,17 @@ export default function TaskBoard() {
   const [tasks, setTasks] = useState([defaultTask]);
   const [showAddModel, setShowAddModel] = useState(false);
 
+   function handleAddTask (e, task){
+    
+      console.log(task,e, "tasker");
+      setShowAddModel(false)
+      
+   }
+
   return (
     <>
       <section className="mb-20" id="tasks">
-        {showAddModel && <AddTaskModel />}
+        {showAddModel && <AddTaskModel onSave={handleAddTask}/>}
         <div className="container">
           <div className="p-2 flex justify-end">
             <SearchTask />
