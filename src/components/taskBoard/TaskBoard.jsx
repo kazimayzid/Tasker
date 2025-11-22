@@ -3,6 +3,7 @@ import SearchTask from "./SearchTask";
 import TaskAction from "./TaskAction";
 import TaskList from "./TaskList";
 import AddTaskModel from "./AddTaskModel";
+import NoTaskFound from "./NoTaskFound";
 
 export default function TaskBoard() {
   const defaultTask = {
@@ -12,30 +13,85 @@ export default function TaskBoard() {
       "i want to learn React such than i can like my slave and make it do whatever i want to do.",
     tags: ["web", "react", "js"],
     priority: "high",
-    ifFavorite: true,
+    isFavorite: true,
   };
   const [tasks, setTasks] = useState([defaultTask]);
   const [showAddModel, setShowAddModel] = useState(false);
+  const [taskToUpdate, setTaskToUpdate] = useState(null);
+  function handleAddTask(newTask, isAdd) {
+    if (isAdd) {
+      setTasks([...tasks, newTask]);
+      setShowAddModel(false);
+    } else {
+      setTasks(
+        tasks.map((task) => {
+          if (task.id === newTask.id) {
+            setShowAddModel(false);
+            return newTask;
+          }
+          return task;
+        })
+      );
+    }
+  }
 
-   function handleAddTask (e, task){
-    
-      console.log(task,e, "tasker");
-      setShowAddModel(false)
-      
-   }
+  function handleEditTask(task) {
+    setTaskToUpdate(task);
+    setShowAddModel(true);
+  }
+  function handleClose() {
+    setShowAddModel(false), setTaskToUpdate(null);
+  }
 
+  function handleDelete(taskId) {
+    const taskAfterDelete = tasks.filter((task) => task.id !== taskId);
+    setTasks(taskAfterDelete);
+  }
+  function handleAllDelete() {
+    tasks.length = 0;
+    setTasks([...tasks]);
+  }
+
+  function handleFavorite(taskId) {
+    const taskIndex = tasks.findIndex((task) => task.id === taskId);
+    const newTasks = [...tasks];
+    newTasks[taskIndex].isFavorite = !newTasks[taskIndex].isFavorite;
+    setTasks(newTasks);
+  }
+
+  function handleSearch(searchTerm) {
+  console.log(searchTerm);
+  const filtered = tasks.filter((task) => task.title.toLocaleLowerCase().includes(searchTerm.toLowerCase()))
+   setTasks([...filtered])
+  }
   return (
     <>
       <section className="mb-20" id="tasks">
-        {showAddModel && <AddTaskModel onSave={handleAddTask}/>}
+        {showAddModel && (
+          <AddTaskModel
+            onSave={handleAddTask}
+            toUpdateTask={taskToUpdate}
+            onCloseClick={handleClose}
+          />
+        )}
         <div className="container">
           <div className="p-2 flex justify-end">
-            <SearchTask />
+            <SearchTask onSearch={handleSearch}/>
           </div>
 
           <div className="rounded-xl border border-[rgba(206,206,206,0.12)] bg-[#1D212B] px-6 py-8 md:px-9 md:py-16">
-            <TaskAction onHandleClick={() => setShowAddModel(true)} />
-            <TaskList tasks={tasks} />
+            <TaskAction
+              onHandleClick={() => setShowAddModel(true)}
+              OnDeleteAll={handleAllDelete}
+            />
+            {
+              tasks > 0 ? (<TaskList
+              tasks={tasks}
+              onEdit={handleEditTask}
+              onDelete={handleDelete}
+              onFav={handleFavorite}
+            />) : (<NoTaskFound/>)
+            }
           </div>
         </div>
       </section>

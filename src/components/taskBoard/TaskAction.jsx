@@ -1,4 +1,4 @@
-export default function TaskAction({onHandleClick}) {
+export default function TaskAction({onHandleClick, OnDeleteAll}) {
   return (
     <>
       <div className="mb-14 items-center justify-between sm:flex">
@@ -7,7 +7,7 @@ export default function TaskAction({onHandleClick}) {
           <button onClick={onHandleClick} className="rounded-md bg-blue-500 px-3.5 py-2.5 text-sm font-semibold">
             Add Task
           </button>
-          <button className="rounded-md bg-red-500 px-3.5 py-2.5 text-sm font-semibold">
+          <button onClick={OnDeleteAll} className="rounded-md bg-red-500 px-3.5 py-2.5 text-sm font-semibold">
             Delete All
           </button>
         </div>
